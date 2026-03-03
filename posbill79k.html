@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>POS Buffet Pro</title>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f4f6f9;
+      margin:0;
+      padding:20px;
+    }
+
+    .main-layout{
+      display:flex;
+      gap:20px;
+      align-items:flex-start;
+      justify-content:center;
+      max-width:1100px;
+      margin:auto;
+    }
+
+    .container{
+      width:520px;
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    h2{ text-align:center; margin:0 0 16px; color:#222; }
+    h3{ margin:10px 0; }
+
+    table{ width:100%; border-collapse:collapse; }
+    td{ padding:8px 0; }
+
+    input{
+      width:90px;
+      padding:6px;
+      border-radius:6px;
+      border:1px solid #ddd;
+      text-align:center;
+    }
+
+    .btn-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    button{
+      padding:10px 12px;
+      border:none;
+      border-radius:10px;
+      font-weight:bold;
+      cursor:pointer;
+      font-size:14px;
+    }
+    button:hover{ opacity:0.92; }
+
+    .btn-primary{ background:#28a745; color:white; flex:1; }
+    .btn-warn{ background:#ffc107; color:#222; flex:1; }
+    .btn-blue{ background:#007bff; color:white; flex:1; }
+    .btn-danger{ background:#dc3545; color:white; }
+    .btn-gray{ background:#6c757d; color:white; }
+
+    .stat-box{
+      margin-top:18px;
+      padding:15px;
+      background:#fafafa;
+      border-radius:10px;
+      border:1px solid #eee;
+    }
+
+    .split{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .split button{ flex:1; min-width:160px; }
+
+    .mini-note{
+      font-size:12px;
+      color:#666;
+      margin-top:8px;
+    }
+    /* ================= BILL K80 PRO ================= */
+
+.bill{
+  width:80mm;
+  background:white;
+  padding:6mm 5mm;
+  font-size:13px;
+  font-family: 'Courier New', monospace;
+  line-height:1.4;
+}
+
+/* HEADER */
+.bill-header{
+  text-align:center;
+  margin-bottom:6px;
+}
+
+.bill-header h3{
+  margin:0;
+  font-size:17px;
+  font-weight:bold;
+}
+
+.bill-header div{
+  font-size:12px;
+}
+
+/* LINE */
+.bill hr{
+  border:none;
+  border-top:1px dashed #000;
+  margin:6px 0;
+}
+
+/* INFO */
+.bill-info{
+  font-size:12px;
+}
+
+.bill{
+  width:80mm;
+  padding:6mm 5mm;
+  font-size:13px;
+  font-family:'Courier New', monospace;
+}
+
+/* Header */
+.bill-header{
+  text-align:center;
+  line-height:1.4;
+  margin-bottom:6px;
+}
+
+.bill-header h3{
+  margin:0;
+  font-size:16px;
+  font-weight:bold;
+}
+
+/* Table */
+.bill table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;   /* QUAN TRỌNG cho K80 */
+  text-align:center;
+  font-size:12px;
+}
+
+.bill th, 
+.bill td{
+  border:1px solid #000;
+  padding:4px;
+  word-wrap:break-word;
+}
+
+/* Căn cột đẹp hơn */
+.bill td:nth-child(1){
+  text-align:left;
+  width:38%;
+}
+
+.bill td:nth-child(2){
+  text-align:right;
+  width:20%;
+}
+
+.bill td:nth-child(3){
+  text-align:center;
+  width:12%;
+}
+
+.bill td:nth-child(4){
+  text-align:right;
+  width:30%;
+}
+
+/* Tổng tiền */
+.bill-total{
+  margin-top:6px;
+  padding-top:6px;
+  border-top:2px solid #000;
+  font-size:15px;
+  font-weight:bold;
+  text-align:right;
+}
+
+/* QR */
+#qrBox{
+  text-align:center;
+  margin-top:8px;
+}
+
+#qr{
+  display:block;
+  margin:8px auto;
+  width:120px;
+}
+
+/* PRINT */
+@media print{
+
+  @page{
+    size:80mm auto;
+    margin:0;
+  }
+
+  body{
+    margin:0;
+  }
+
+  body *{
+    visibility:hidden;
+  }
+
+  .bill, .bill *{
+    visibility:visible;
+  }
+
+  .bill{
+    position:absolute;
+    left:0;
+    top:0;
+    box-shadow:none;
+    border-radius:0;
+  }
+}
+ 
+  </style>
+</head>
+
+<body>
+  <div class="main-layout">
+
+    <section class="container">
+      <h2>BUFFET BÚN ĐẬU 79K</h2>
+
+      <table>
+        <tr>
+          <td>Buffet Người Lớn (79k)</td>
+          <td><input type="number" id="adult" value="0" min="0"></td>
+        </tr>
+        <tr>
+          <td>Buffet Trẻ Em (49k)</td>
+          <td><input type="number" id="child" value="0" min="0"></td>
+        </tr>
+        <tr>
+          <td>Nước (10k)</td>
+          <td><input type="number" id="drink" value="0" min="0"></td>
+        </tr>
+      </table>
+
+      <div class="btn-row">
+        <button type="button" class="btn-primary" onclick="printBill()">IN HÓA ĐƠN</button>
+        <button type="button" class="btn-warn" onclick="toggleDiscount()" id="btnDiscount">🔥 Bật giảm 10%</button>
+        <button type="button" class="btn-blue" onclick="toggleQR()" id="btnQR">Ẩn QR</button>
+      </div>
+
+      <div class="stat-box">
+        <h3>📊 Doanh thu hôm nay</h3>
+        <p>Tổng tiền: <b id="todayRevenue">0</b> đ</p>
+        <p>Số hóa đơn: <b id="todayBills">0</b></p>
+
+        <div class="split">
+          <button type="button" class="btn-danger" onclick="undoLastBill()">↩️ Hoàn tác hóa đơn gần nhất</button>
+          <button type="button" class="btn-gray" onclick="resetToday()">Reset doanh thu hôm nay</button>
+        </div>
+
+        <hr>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+  <h3 style="margin:10px 0;">📊 Doanh thu tất cả ngày</h3>
+  <button type="button" class="btn-gray" onclick="toggleSection('allDaysWrap','btnToggleAllDays')" id="btnToggleAllDays">
+    Ẩn
+  </button>
+</div>
+
+<div id="allDaysWrap">
+  <!-- GIỮ NGUYÊN TOÀN BỘ NỘI DUNG BÊN DƯỚI CỦA "Doanh thu tất cả ngày" -->
+  <div class="split">
+  <button type="button" class="btn-blue" onclick="renderAllDays()">Hiển thị bảng ngày</button>
+  <button type="button" class="btn-gray" onclick="exportRevenueCSV()">Export CSV doanh thu</button>
+  <button type="button" class="btn-danger" onclick="clearAllRevenue()">Xóa toàn bộ doanh thu</button>
+</div>
+
+  <table style="margin-top:10px; font-size:12px;">
+    <thead>
+      <tr>
+        <th>Ngày</th>
+        <th>Tổng tiền</th>
+        <th>Số HĐ</th>
+      </tr>
+    </thead>
+    <tbody id="allDaysTable"></tbody>
+  </table>
+
+  <p style="margin-top:10px;">
+    <b>TỔNG DOANH THU: <span id="grandTotal">0</span> đ</b>
+  </p>
+</div>
+
+        <div class="mini-note">
+          * “Hoàn tác” chỉ áp dụng cho <b>hóa đơn vừa in gần nhất</b> (trừ doanh thu + xóa khỏi lịch sử).
+        </div>
+      </div>
+
+      <div class="history">
+  <div class="history-header">
+    <strong>🧾 Lịch sử hóa đơn</strong>
+
+    <div class="split" style="margin:0; gap:8px;">
+      <button type="button" class="btn-gray" onclick="toggleSection('invoiceWrap','btnToggleInvoices')" id="btnToggleInvoices">Ẩn</button>
+      <button type="button" class="btn-gray" onclick="exportInvoicesCSV()">Export CSV hóa đơn</button>
+      <button type="button" class="btn-danger" onclick="clearInvoiceHistory()">Xóa lịch sử HĐ</button>
+    </div>
+  </div>
+
+  <div id="invoiceWrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#HĐ</th>
+          <th>Thời gian</th>
+          <th>Tổng</th>
+          <th>Giảm</th>
+          <th class="actions">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="invoiceTable"></tbody>
+    </table>
+  </div>
+</div>
+
+    </section>
+
+    <aside class="bill" id="bill">
+<div class="bill-header">
+  <h3>BUFFET BÚN ĐẬU 79K</h3>
+  <div>SDT / ZALO : 0888800740</div>
+  <div>Tắc Cậu - Kiên Giang</div>
+</div>
+
+      <hr>
+
+      <p>Số HĐ: <span id="billNo"></span></p>
+      <p>Thời gian: <span id="time"></span></p>
+
+      <hr>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Mặt hàng</th>
+            <th>Đ.Giá</th>
+            <th>SL</th>
+            <th>T.Tiền</th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+
+      <hr>
+
+      <div class="bill-total">
+  <span>TỔNG TIỀN</span>
+  <span><span id="total"></span> đ</span>
+</div>
+
+      <div class="center" id="qrBox">
+        <img id="qr" width="120" alt="QR chuyển khoản">
+        <p style="margin:6px 0 0;">Quét QR để chuyển khoản</p>
+      </div>
+
+      <hr>
+
+      <div class="center">
+        <p style="margin:0;">Cảm ơn quý khách!</p>
+      </div>
+    </aside>
+
+  </div>
+
+  <script>
+    // ====== CONFIG ======
+    const PRICES = { adult: 79000, child: 49000, drink: 10000 };
+
+    const BANK = "970422";
+    const ACCOUNT = "3333333333149";
+    const ACCOUNT_NAME = "TRUONG THI TO UYEN";
+
+    // ====== STATE ======
+    let qrVisible = true;
+    let percentDiscount = 0;
+    let discountActive = false;
+
+    // ====== HELPERS ======
+    function formatMoney(n){ return Number(n || 0).toLocaleString('vi-VN'); }
+    function getToday(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+    function nowISO(){ return new Date().toISOString(); }
+
+    function readRevenue(){
+      return JSON.parse(localStorage.getItem("revenue") || "{}");
+    }
+    function writeRevenue(data){
+      localStorage.setItem("revenue", JSON.stringify(data));
+    }
+
+    function readInvoices(){
+      return JSON.parse(localStorage.getItem("invoices") || "[]");
+    }
+    function writeInvoices(list){
+      localStorage.setItem("invoices", JSON.stringify(list));
+    }
+
+    function getNextBillNo(){
+      let billNo = parseInt(localStorage.getItem("billNo") || "1000", 10);
+      billNo++;
+      localStorage.setItem("billNo", String(billNo));
+      return billNo;
+    }
+
+    function setLastInvoiceId(id){
+      localStorage.setItem("lastInvoiceId", id || "");
+    }
+    function getLastInvoiceId(){
+      return localStorage.getItem("lastInvoiceId") || "";
+    }
+
+    function downloadText(filename, text){
+      const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // ====== UI TOGGLES ======
+    function toggleQR(){
+      const qrBox = document.getElementById("qrBox");
+      const btn = document.getElementById("btnQR");
+      qrVisible = !qrVisible;
+
+      if(qrVisible){
+        qrBox.style.display = "block";
+        btn.innerText = "Ẩn QR";
+      }else{
+        qrBox.style.display = "none";
+        btn.innerText = "Hiện QR";
+      }
+    }
+
+    function toggleDiscount(){
+      const btn = document.getElementById("btnDiscount");
+      discountActive = !discountActive;
+
+      if(discountActive){
+        percentDiscount = 10;
+        btn.innerText = "❌ Tắt giảm 10%";
+        btn.style.background = "#dc3545";
+        btn.style.color = "white";
+      }else{
+        percentDiscount = 0;
+        btn.innerText = "🔥 Bật giảm 10%";
+        btn.style.background = "#ffc107";
+        btn.style.color = "#222";
+      }
+    }
+
+    // ====== STATS ======
+    function loadStats(){
+      const today = getToday();
+      const data = readRevenue();
+      if(!data[today]) data[today] = {total:0, bills:0};
+      writeRevenue(data);
+
+      document.getElementById("todayRevenue").innerText = formatMoney(data[today].total);
+      document.getElementById("todayBills").innerText = data[today].bills;
+    }
+
+    function renderAllDays(){
+      const data = readRevenue();
+      const table = document.getElementById("allDaysTable");
+      let grandTotal = 0;
+      table.innerHTML = "";
+
+      Object.keys(data).sort().forEach(date=>{
+        grandTotal += Number(data[date].total || 0);
+        table.innerHTML += `
+          <tr>
+            <td>${date}</td>
+            <td>${formatMoney(data[date].total)}</td>
+            <td>${data[date].bills}</td>
+          </tr>
+        `;
+      });
+
+      document.getElementById("grandTotal").innerText = formatMoney(grandTotal);
+    }
+
+    function resetToday(){
+      if(!confirm("Reset doanh thu hôm nay?")) return;
+
+      const today = getToday();
+      const data = readRevenue();
+      data[today] = {total:0, bills:0};
+      writeRevenue(data);
+
+      loadStats();
+      renderAllDays();
+    }
+
+    // ====== BILL RENDER ======
+    function renderBill(invoice){
+      // header
+      document.getElementById("billNo").innerText = invoice.billNo;
+      document.getElementById("time").innerText = new Date(invoice.datetimeISO).toLocaleString();
+
+      // items
+      const tbody = document.getElementById("itemsBody");
+      tbody.innerHTML = "";
+
+      let totalQty = 0;
+
+      invoice.items.forEach(it=>{
+        totalQty += it.qty;
+        const rowTotal = it.price * it.qty;
+        tbody.innerHTML += `
+          <tr>
+            <td>${it.name}</td>
+            <td>${formatMoney(it.price)}</td>
+            <td>${it.qty}</td>
+            <td>${formatMoney(rowTotal)}</td>
+          </tr>
+        `;
+      });
+
+      if(invoice.discountPercent > 0){
+        tbody.innerHTML += `
+          <tr style="color:red;">
+            <td colspan="3">Giảm giá (${invoice.discountPercent}%)</td>
+            <td>- ${formatMoney(invoice.discountAmount)}</td>
+          </tr>
+        `;
+      }
+
+      tbody.innerHTML += `
+        <tr style="font-weight:bold;border-top:1px solid #000;border-bottom:1px solid #000;">
+          <td>ALL</td>
+          <td></td>
+          <td>${totalQty}</td>
+          <td>${formatMoney(invoice.total)}</td>
+        </tr>
+      `;
+
+      document.getElementById("total").innerText = formatMoney(invoice.total);
+
+      // QR
+      const qrUrl = `https://img.vietqr.io/image/${BANK}-${ACCOUNT}-compact2.png?amount=${invoice.total}&addInfo=ThanhToanHD${invoice.billNo}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+      document.getElementById("qr").src = qrUrl;
+    }
+
+    // ====== INVOICE HISTORY ======
+    function renderInvoiceHistory(){
+      const invoices = readInvoices().slice().sort((a,b)=> b.billNo - a.billNo); // newest first
+      const tbody = document.getElementById("invoiceTable");
+      tbody.innerHTML = "";
+
+      if(invoices.length === 0){
+        tbody.innerHTML = `<tr><td colspan="5" style="color:#666;">Chưa có hóa đơn nào.</td></tr>`;
+        return;
+      }
+
+      // show latest 30
+      invoices.slice(0, 30).forEach(inv=>{
+        tbody.innerHTML += `
+          <tr>
+            <td>${inv.billNo}</td>
+            <td>${new Date(inv.datetimeISO).toLocaleString()}</td>
+            <td>${formatMoney(inv.total)} đ</td>
+            <td>${inv.discountPercent ? inv.discountPercent + "%" : "-"}</td>
+            <td class="actions">
+              <button class="btn-blue" type="button" onclick="viewInvoice(${inv.billNo})">Xem</button>
+              <button class="btn-primary" type="button" onclick="reprintInvoice(${inv.billNo})">In lại</button>
+              <button class="btn-danger" type="button" onclick="deleteInvoice(${inv.billNo})">Xóa</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function findInvoiceByBillNo(billNo){
+      const invoices = readInvoices();
+      return invoices.find(x => x.billNo === billNo) || null;
+    }
+
+    function viewInvoice(billNo){
+      const inv = findInvoiceByBillNo(billNo);
+      if(!inv) return alert("Không tìm thấy hóa đơn!");
+      renderBill(inv);
+      // không print
+    }
+
+    function reprintInvoice(billNo){
+      const inv = findInvoiceByBillNo(billNo);
+      if(!inv) return alert("Không tìm thấy hóa đơn!");
+      renderBill(inv);
+      window.print();
+    }
+
+    function deleteInvoice(billNo){
+      if(!confirm(`Xóa hóa đơn #${billNo}? (Chỉ xóa lịch sử, KHÔNG trừ doanh thu)`)) return;
+
+      let invoices = readInvoices();
+      invoices = invoices.filter(x => x.billNo !== billNo);
+      writeInvoices(invoices);
+
+      renderInvoiceHistory();
+    }
+
+    function clearInvoiceHistory(){
+      if(!confirm("Xóa TOÀN BỘ lịch sử hóa đơn? (Không trừ doanh thu)")) return;
+      writeInvoices([]);
+      setLastInvoiceId("");
+      renderInvoiceHistory();
+    }
+
+    // ====== UNDO ======
+    function undoLastBill(){
+      const lastId = getLastInvoiceId();
+      if(!lastId){
+        alert("Không có hóa đơn nào để hoàn tác.");
+        return;
+      }
+
+      const invoices = readInvoices();
+      const idx = invoices.findIndex(x => x.id === lastId);
+      if(idx === -1){
+        setLastInvoiceId("");
+        alert("Không tìm thấy hóa đơn gần nhất để hoàn tác.");
+        return;
+      }
+
+      const inv = invoices[idx];
+      if(!confirm(`Hoàn tác hóa đơn #${inv.billNo}? (Trừ doanh thu + xóa khỏi lịch sử)`)) return;
+
+      // remove invoice
+      invoices.splice(idx, 1);
+      writeInvoices(invoices);
+
+      // subtract revenue
+      const day = inv.date;
+      const data = readRevenue();
+      if(!data[day]) data[day] = {total:0, bills:0};
+
+      data[day].total = Math.max(0, Number(data[day].total) - Number(inv.total));
+      data[day].bills = Math.max(0, Number(data[day].bills) - 1);
+
+      writeRevenue(data);
+
+      // clear last invoice id
+      setLastInvoiceId("");
+
+      loadStats();
+      renderAllDays();
+      renderInvoiceHistory();
+
+      alert("✅ Đã hoàn tác hóa đơn gần nhất.");
+    }
+
+    // ====== PRINT / CREATE NEW INVOICE ======
+    function printBill(){
+      const adult = parseInt(document.getElementById("adult").value, 10) || 0;
+      const child = parseInt(document.getElementById("child").value, 10) || 0;
+      const drink = parseInt(document.getElementById("drink").value, 10) || 0;
+
+      const subTotal = adult*PRICES.adult + child*PRICES.child + drink*PRICES.drink;
+
+      if(subTotal === 0){
+        alert("Chưa nhập món!");
+        return;
+      }
+
+      const discountAmount = Math.round(subTotal * percentDiscount / 100);
+const total = Math.round(subTotal - discountAmount);
+
+      const billNo = getNextBillNo();
+      const dtISO = nowISO();
+      const date = getToday();
+
+      const items = [];
+      if(adult > 0) items.push({name:"Buffet Người Lớn", price:PRICES.adult, qty:adult});
+      if(child > 0) items.push({name:"Buffet Trẻ Em", price:PRICES.child, qty:child});
+      if(drink > 0) items.push({name:"Nước", price:PRICES.drink, qty:drink});
+
+      const invoice = {
+        id: "inv_" + billNo + "_" + Date.now(),
+        billNo,
+        datetimeISO: dtISO,
+        date,
+        items,
+        subTotal,
+        discountPercent: percentDiscount,
+        discountAmount,
+        total
+      };
+
+      // render bill preview
+      renderBill(invoice);
+
+      // save invoice history
+      const invoices = readInvoices();
+      invoices.push(invoice);
+      writeInvoices(invoices);
+
+      // save last invoice id for undo
+      setLastInvoiceId(invoice.id);
+
+      // update revenue per day
+      const data = readRevenue();
+      if(!data[date]) data[date] = {total:0, bills:0};
+      data[date].total = Number(data[date].total) + Number(total);
+      data[date].bills = Number(data[date].bills) + 1;
+      writeRevenue(data);
+
+      loadStats();
+      renderAllDays();
+      renderInvoiceHistory();
+
+      // reset inputs for next bill
+      document.getElementById("adult").value = 0;
+      document.getElementById("child").value = 0;
+      document.getElementById("drink").value = 0;
+
+      // print
+      window.print();
+    }
+
+    // ====== EXPORT CSV ======
+    function exportRevenueCSV(){
+      const data = readRevenue();
+      const dates = Object.keys(data).sort();
+      let csv = "Ngay,TongTien,SoHoaDon\n";
+      dates.forEach(d=>{
+        csv += `${d},${Number(data[d].total || 0)},${Number(data[d].bills || 0)}\n`;
+      });
+      downloadText(`doanh_thu_${getToday()}.csv`, csv);
+    }
+
+    function exportInvoicesCSV(){
+      const invoices = readInvoices().slice().sort((a,b)=> a.billNo - b.billNo);
+      // HĐ dạng 1 dòng / hóa đơn, items gộp vào 1 cột
+      let csv = "BillNo,DateTime,Date,SubTotal,DiscountPercent,DiscountAmount,Total,Items\n";
+      invoices.forEach(inv=>{
+        const itemsText = inv.items.map(it=> `${it.name} x${it.qty} (${it.price})`).join(" | ");
+        const safeItems = `"${itemsText.replaceAll('"','""')}"`;
+        csv += `${inv.billNo},${inv.datetimeISO},${inv.date},${inv.subTotal},${inv.discountPercent},${inv.discountAmount},${inv.total},${safeItems}\n`;
+      });
+      downloadText(`hoa_don_${getToday()}.csv`, csv);
+    }
+
+    // ====== INIT ======
+    loadStats();
+    renderAllDays();
+    renderInvoiceHistory();
+    restoreSectionState("allDaysWrap", "btnToggleAllDays");
+restoreSectionState("invoiceWrap", "btnToggleInvoices");
+
+    // hiển thị bill rỗng ban đầu
+    document.getElementById("billNo").innerText = "-";
+    document.getElementById("time").innerText = "-";
+    document.getElementById("total").innerText = "0";
+    function toggleSection(wrapId, btnId){
+  const wrap = document.getElementById(wrapId);
+  const btn = document.getElementById(btnId);
+  if(!wrap || !btn) return;
+
+  const isHidden = wrap.style.display === "none";
+  wrap.style.display = isHidden ? "block" : "none";
+  btn.innerText = isHidden ? "Ẩn" : "Hiện";
+
+  // lưu trạng thái
+  localStorage.setItem("ui_" + wrapId, isHidden ? "show" : "hide");
+}
+
+function restoreSectionState(wrapId, btnId){
+  const wrap = document.getElementById(wrapId);
+  const btn = document.getElementById(btnId);
+  if(!wrap || !btn) return;
+
+  const state = localStorage.getItem("ui_" + wrapId) || "show";
+  if(state === "hide"){
+    wrap.style.display = "none";
+    btn.innerText = "Hiện";
+  }else{
+    wrap.style.display = "block";
+    btn.innerText = "Ẩn";
+  }
+}
+function clearAllRevenue(){
+  if(!confirm("Xóa TOÀN BỘ doanh thu + toàn bộ hóa đơn?")) return;
+
+  localStorage.removeItem("revenue");
+  localStorage.removeItem("invoices");
+  localStorage.removeItem("lastInvoiceId");
+
+  loadStats();
+  renderAllDays();
+  renderInvoiceHistory();
+
+  alert("Đã xóa toàn bộ dữ liệu.");
+}
+function clearAllRevenue(){
+  const pass = prompt("Nhập mật khẩu để xóa:");
+  if(pass !== "1608") return alert("Sai mật khẩu!");
+
+  localStorage.removeItem("revenue");
+  loadStats();
+  renderAllDays();
+
+  alert("Đã xóa toàn bộ doanh thu.");
+}
+  </script>
+</body>
+</html>
